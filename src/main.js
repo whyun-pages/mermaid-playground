@@ -277,7 +277,7 @@ class MermaidPlayground {
         dropdown.classList.add('hidden');
     }
 
-    changeTheme(theme) {
+    changeTheme(theme = defaultConfig.theme) {
         this.currentTheme = theme;
         
         // 只更新 Mermaid 主题
