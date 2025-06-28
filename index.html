@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mermaid 演练场</title>
+    <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 导航菜单 -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>Mermaid 演练场</h1>
+            </div>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="btn btn-secondary">
+                    <span class="icon">🌙</span>
+                    切换主题
+                </button>
+                <button id="export-btn" class="btn btn-primary">
+                    <span class="icon">📤</span>
+                    导出
+                </button>
+            </div>
+        </nav>
+
+        <!-- 主题选择下拉菜单 -->
+        <div id="theme-dropdown" class="dropdown hidden">
+            <div class="dropdown-content">
+                <div class="dropdown-item" data-theme="default">默认</div>
+                <div class="dropdown-item" data-theme="dark">黑暗</div>
+                <div class="dropdown-item" data-theme="forest">森林</div>
+                <div class="dropdown-item" data-theme="neutral">中性</div>
+                <div class="dropdown-item" data-theme="base">基础</div>
+            </div>
+        </div>
+
+        <!-- 导出选项下拉菜单 -->
+        <div id="export-dropdown" class="dropdown hidden">
+            <div class="dropdown-content">
+                <div class="dropdown-item" data-format="png">PNG</div>
+                <div class="dropdown-item" data-format="svg">SVG</div>
+            </div>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 左侧代码编辑区 -->
+            <div class="editor-section">
+                <div class="section-header">
+                    <h2>Mermaid 代码</h2>
+                </div>
+                <div id="editor" class="code-editor"></div>
+            </div>
+
+            <!-- 右侧渲染区 -->
+            <div class="render-section">
+                <div class="section-header">
+                    <h2>渲染结果</h2>
+                </div>
+                <div id="render-area" class="render-area">
+                    <div class="placeholder">
+                        在左侧输入 Mermaid 代码，这里将显示渲染结果
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html> 

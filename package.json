@@ -1,0 +1,27 @@
+{
+  "name": "mermaid-playground",
+  "version": "1.0.0",
+  "description": "一个 mermaid 演练场项目，支持对输入的 mermaid 代码进行渲染，并支持对渲染结果进行编辑",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "mermaid": "^11.7.0",
+    "monaco-editor": "^0.52.2"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0",
+    "vite-plugin-monaco-editor": "^1.1.0"
+  },
+  "keywords": [
+    "mermaid",
+    "diagram",
+    "playground",
+    "editor"
+  ],
+  "author": "",
+  "license": "MIT"
+}
