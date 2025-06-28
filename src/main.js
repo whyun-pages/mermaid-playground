@@ -279,13 +279,10 @@ class MermaidPlayground {
 
     changeTheme(theme) {
         this.currentTheme = theme;
-        // ✅ 强制重置 Mermaid 状态
-        // mermaid.mermaidAPI.reset();
         
         // 只更新 Mermaid 主题
         mermaid.initialize({
-            // ...defaultConfig,
-            theme: theme
+            theme: theme,
         });
 
         // 保存主题设置
@@ -342,6 +339,59 @@ class MermaidPlayground {
             `;
         }
     }
+    urlEncode2Latin1(str) {
+        return encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode('0x' + p1));
+    }
+
+    async svgToCanvas(svg) {
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svg, 'image/svg+xml');
+        const svgElement = svgDoc.documentElement;
+        
+        // 获取 SVG 的 viewBox 或宽高
+        const viewBox = svgElement.getAttribute('viewBox');
+        let width = 800;
+        let height = 600;
+        
+        if (viewBox) {
+            const [, , w, h] = viewBox.split(' ').map(Number);
+            width = w + 40; // 添加边距
+            height =  h + 40;
+        } else {
+            const svgWidth = svgElement.getAttribute('width');
+            const svgHeight = svgElement.getAttribute('height');
+            if (svgWidth && svgHeight) {
+                width = Math.max(800, parseInt(svgWidth) + 40);
+                height = Math.max(600, parseInt(svgHeight) + 40);
+            }
+        }
+        
+        // 创建 Canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = width;
+        canvas.height = height;
+        
+        // 设置白色背景
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        
+        // 创建图片
+        const img = new Image();
+        
+        // 使用 data URL
+        const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(this.urlEncode2Latin1(svg));
+        
+        await new Promise((resolve, reject) => {
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve();
+            };
+            img.onerror = reject;
+            img.src = svgDataUrl;
+        });
+        return canvas;
+    }
 
     async exportDiagram(format) {
         const code = this.editor.getValue().trim();
@@ -361,75 +411,44 @@ class MermaidPlayground {
                 filename = 'mermaid-diagram.svg';
             } else if (format === 'png') {
                 const { svg } = await mermaid.render('export-diagram', code);
-                // console.log(svg);
-                // dataUrl = await this.svgToPngWithCanvg(svg);
-                // // dataUrl = URL.createObjectURL(blob);
-                // filename = 'mermaid-diagram.png';
-                
-                // 解析 SVG 获取尺寸信息
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(svg, 'image/svg+xml');
-                const svgElement = svgDoc.documentElement;
-                
-                // 获取 SVG 的 viewBox 或宽高
-                const viewBox = svgElement.getAttribute('viewBox');
-                let width = 800;
-                let height = 600;
-                
-                if (viewBox) {
-                    const [, , w, h] = viewBox.split(' ').map(Number);
-                    width = w + 40; // 添加边距
-                    height =  h + 40;
-                } else {
-                    const svgWidth = svgElement.getAttribute('width');
-                    const svgHeight = svgElement.getAttribute('height');
-                    if (svgWidth && svgHeight) {
-                        width = Math.max(800, parseInt(svgWidth) + 40);
-                        height = Math.max(600, parseInt(svgHeight) + 40);
-                    }
-                }
-                
-                // 创建 Canvas
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = width;
-                canvas.height = height;
-                
-                // 设置白色背景
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, width, height);
-                
-                // 创建图片
-                const img = new Image();
-                
-                // 使用 data URL
-                const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-                
-                await new Promise((resolve, reject) => {
-                    img.onload = () => {
-                        // 居中绘制
-                        // const x = (width - img.width) / 2;
-                        // const y = (height - img.height) / 2;
-                        ctx.drawImage(img,0,0, width, height);
-                        resolve();
-                    };
-                    img.onerror = reject;
-                    img.src = svgDataUrl;
-                });
-                
-                // 转换为 PNG
+                const canvas = await this.svgToCanvas(svg);
                 dataUrl = canvas.toDataURL('image/png');
+
                 filename = 'mermaid-diagram.png';
+            } else if (format === 'copy') {
+                const { svg } = await mermaid.render('export-diagram', code);
+                // 复制SVG到剪贴板
+                await navigator.clipboard.writeText(svg);
+                alert('SVG 已复制到剪贴板！');
+                return;
+            } else if (format === 'copy-png') {
+                const { svg } = await mermaid.render('export-diagram', code);
+                // 解析 SVG 获取尺寸信息
+                const canvas = await this.svgToCanvas(svg);
+                // 转为Blob并写入剪贴板
+                canvas.toBlob(async (blob) => {
+                    try {
+                        await navigator.clipboard.write([
+                            new window.ClipboardItem({ 'image/png': blob })
+                        ]);
+                        alert('PNG图片已复制到剪贴板！');
+                    } catch (err) {
+                        alert('复制PNG失败：' + err.message);
+                    }
+                }, 'image/png');
+                return;
             }
 
-            // 下载文件
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = filename;
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            if (format === 'svg' || format === 'png') {
+                // 下载文件
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = filename;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
 
         } catch (error) {
             console.error('导出错误:', error);
