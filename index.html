@@ -62,7 +62,15 @@
                     <h2>渲染结果</h2>
                 </div>
                 <div id="render-area" class="render-area">
-                    <div class="placeholder">
+                    <div class="render-toolbar">
+                        <button class="render-btn" id="btn-reset" title="重置"><span class="icon-toolbar">⛶</span></button>
+                        <div class="divider"></div>
+                        <button class="render-btn" id="btn-zoom-out" title="缩小"><span class="icon-toolbar">&#8722;</span></button>
+                        <button class="render-btn" id="btn-zoom-in" title="放大"><span class="icon-toolbar">&#43;</span></button>
+                        <div class="divider"></div>
+                        <button class="render-btn" id="btn-maximize" title="最大化"><span class="icon-toolbar">&#8599;</span></button>
+                    </div>
+                    <div class="placeholder" id="svg-container">
                         在左侧输入 Mermaid 代码，这里将显示渲染结果
                     </div>
                 </div>

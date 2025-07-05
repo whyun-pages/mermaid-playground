@@ -57,12 +57,36 @@ const defaultMermaidCode = `graph TD
     C --> E[结束]
     D --> E
     E --> F[完成]`;
+// 处理不同浏览器的兼容性
+function requestFullscreen(element) {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.webkitRequestFullscreen) { // Safari
+        element.webkitRequestFullscreen();
+    } else if (element.mozRequestFullScreen) { // Firefox
+        element.mozRequestFullScreen();
+    } else if (element.msRequestFullscreen) { // IE/Edge
+        element.msRequestFullscreen();
+    }
+}
 
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+}
 class MermaidPlayground {
     constructor() {
         this.editor = null;
         this.currentTheme = 'default';
         this.renderTimeout = null;
+        this.scale = 1;
         this.init();
     }
 
@@ -217,10 +241,21 @@ class MermaidPlayground {
         // this.renderMermaid();
     }
 
+    get svg() {
+        return document.getElementById('svg-container').querySelector('svg');
+    }
+
     initEventListeners() {
         // 主题切换按钮
         const themeToggle = document.getElementById('theme-toggle');
         const themeDropdown = document.getElementById('theme-dropdown');
+        const resetBtn = document.getElementById('btn-reset');
+        const zoomOutBtn = document.getElementById('btn-zoom-out');
+        const zoomInBtn = document.getElementById('btn-zoom-in');
+        const maximizeBtn = document.getElementById('btn-maximize');
+        const renderSection = document.querySelector('.render-section');
+        const maxBtnTitle = maximizeBtn.querySelector('span');
+
         
         themeToggle.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -259,6 +294,35 @@ class MermaidPlayground {
             this.hideDropdown(themeDropdown);
             this.hideDropdown(exportDropdown);
         });
+        resetBtn.addEventListener('click', () => {
+            if (this.svg) {
+                this.scale = 1;
+                this.svg.style.transform = 'scale(1)';
+            }
+        });
+        zoomOutBtn.addEventListener('click', () => {
+            if (this.svg) {
+                this.scale -= 0.1;
+                this.svg.style.transform = `scale(${this.scale})`;
+            }
+        });
+        zoomInBtn.addEventListener('click', () => {
+            if (this.svg) {
+                this.scale += 0.1;
+                this.svg.style.transform = `scale(${this.scale})`;
+            }
+        });
+        maximizeBtn.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                exitFullscreen();
+                maximizeBtn.title = '最大化';
+                maxBtnTitle.innerHTML = '&#8599;';
+            } else {
+                requestFullscreen(renderSection);
+                maximizeBtn.title = '退出最大化';
+                maxBtnTitle.innerText = '↙';
+            }
+        });
     }
 
     toggleDropdown(dropdown) {
@@ -277,7 +341,7 @@ class MermaidPlayground {
         dropdown.classList.add('hidden');
     }
 
-    changeTheme(theme = defaultConfig.theme) {
+    changeTheme(theme = 'default') {
         this.currentTheme = theme;
         
         // 只更新 Mermaid 主题
@@ -310,7 +374,7 @@ class MermaidPlayground {
     }
 
     async renderMermaid() {
-        const renderArea = document.getElementById('render-area');
+        const renderArea = document.getElementById('svg-container');
         const code = this.editor.getValue().trim();
 
         if (!code) {

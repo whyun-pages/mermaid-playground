@@ -205,6 +205,7 @@ body {
     padding: var(--spacing-lg);
     overflow: auto;
     background-color: var(--background-color);
+    position: relative;
 }
 
 .placeholder {
@@ -293,4 +294,57 @@ body {
 .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
+}
+
+/* 渲染区悬浮工具栏 */
+.render-toolbar {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    background: #f5f6fa;
+    border-radius: 2.5rem;
+    box-shadow: 0 2px 8px 0 rgba(16,30,54,0.06);
+    padding: 0.25rem 0.5rem;
+    z-index: 10;
+    min-height: 56px;
+    min-width: 220px;
+    gap: 0.25rem;
+}
+
+.render-btn {
+    background: none;
+    border: none;
+    outline: none;
+    border-radius: 1.2rem;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 1.5rem;
+    color: #0a0d14;
+}
+
+.render-btn:hover {
+    background: #e9ebf0;
+}
+
+.divider {
+    width: 2px;
+    height: 32px;
+    background: #e4e7ee;
+    margin: 0 0.5rem;
+    border-radius: 1px;
+}
+
+.icon-toolbar {
+    font-size: 1.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
 } 

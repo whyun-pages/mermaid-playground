@@ -1,9 +1,21 @@
 import { defineConfig } from 'vite';
 import monacoEditorPlugin from 'vite-plugin-monaco-editor';
+import cdn from 'vite-plugin-cdn-import';
 
 export default defineConfig({
   plugins: [
-    monacoEditorPlugin({})
+    monacoEditorPlugin({
+      publicPath: 'vs',
+    }),
+    cdn({
+      modules: [
+          {
+              name: 'mermaid',
+              var: 'mermaid',
+              path: `dist/mermaid.min.js`,
+          },
+      ],
+    })
   ],
   server: {
     port: 3000,
@@ -11,7 +23,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
   },
   optimizeDeps: {
     include: ['monaco-editor']
