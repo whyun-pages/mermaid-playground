@@ -308,8 +308,8 @@ body {
     box-shadow: 0 2px 8px 0 rgba(16,30,54,0.06);
     padding: 0.25rem 0.5rem;
     z-index: 10;
-    min-height: 56px;
-    min-width: 220px;
+    min-height: 36px;
+    min-width: 120px;
     gap: 0.25rem;
 }
 
@@ -318,8 +318,8 @@ body {
     border: none;
     outline: none;
     border-radius: 1.2rem;
-    width: 56px;
-    height: 56px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
