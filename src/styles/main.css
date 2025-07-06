@@ -39,6 +39,7 @@
 
     /* 字体 */
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
     --font-size-lg: 1.125rem;
@@ -81,9 +82,59 @@ body {
     color: var(--text-primary);
 }
 
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-xl);
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-brand h1 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+}
+
+.name {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    transition: background-color 0.2s ease;
+}
+
+.name:hover {
+    background-color: var(--border-color);
+}
+
 .nav-controls {
     display: flex;
     gap: var(--spacing-md);
+    align-items: center;
+}
+
+.template-selector {
+    position: relative;
+}
+
+.dropdown-arrow {
+    font-size: var(--font-size-xs);
+    margin-left: var(--spacing-xs);
+    transition: transform 0.2s ease;
+}
+
+.template-selector.active .dropdown-arrow {
+    transform: rotate(180deg);
 }
 
 /* 按钮样式 */
@@ -159,6 +210,46 @@ body {
 
 .dropdown-item:hover {
     background-color: var(--border-color);
+}
+
+/* 模板下拉菜单样式 */
+.template-item {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.template-item:last-child {
+    border-bottom: none;
+}
+
+.template-item:hover {
+    background-color: var(--border-color);
+}
+
+.template-name {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.template-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm);
+}
+
+.template-preview svg {
+    max-width: 100%;
+    height: auto;
 }
 
 /* 主要内容区域 */

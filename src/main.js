@@ -87,6 +87,7 @@ class MermaidPlayground {
         this.currentTheme = 'default';
         this.renderTimeout = null;
         this.scale = 1;
+        this.name = this.loadName();
         this.init();
     }
 
@@ -94,6 +95,7 @@ class MermaidPlayground {
         this.initMonacoEditor();
         this.initEventListeners();
         this.loadTheme();
+        this.initName();
     }
 
     initMonacoEditor() {
@@ -262,6 +264,17 @@ class MermaidPlayground {
             this.toggleDropdown(themeDropdown);
         });
 
+        // 模板切换按钮
+        const templateToggle = document.getElementById('template-toggle');
+        const templateDropdown = document.getElementById('template-dropdown');
+        const templateSelector = document.querySelector('.template-selector');
+        
+        templateToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleDropdown(templateDropdown);
+            templateSelector.classList.toggle('active');
+        });
+
         // 导出按钮
         const exportBtn = document.getElementById('export-btn');
         const exportDropdown = document.getElementById('export-dropdown');
@@ -289,11 +302,32 @@ class MermaidPlayground {
             }
         });
 
+        // 模板选择
+        templateDropdown.addEventListener('click', (e) => {
+            if (e.target.closest('.template-item')) {
+                const templateItem = e.target.closest('.template-item');
+                const template = templateItem.dataset.template;
+                this.loadTemplate(template);
+                this.hideDropdown(templateDropdown);
+                templateSelector.classList.remove('active');
+            }
+        });
+
         // 点击外部关闭下拉菜单
         document.addEventListener('click', () => {
             this.hideDropdown(themeDropdown);
             this.hideDropdown(exportDropdown);
+            this.hideDropdown(templateDropdown);
+            templateSelector.classList.remove('active');
         });
+
+        // 双击用户名编辑
+        const userNameElement = document.querySelector('.name');
+        if (userNameElement) {
+            userNameElement.addEventListener('dblclick', () => {
+                this.editUserName();
+            });
+        }
         resetBtn.addEventListener('click', () => {
             if (this.svg) {
                 this.scale = 1;
@@ -455,6 +489,134 @@ class MermaidPlayground {
             img.src = svgDataUrl;
         });
         return canvas;
+    }
+
+    loadName() {
+        const savedName = localStorage.getItem('name');
+        return savedName || '未命名';
+    }
+
+    setUserName(name) {
+        this.name = name;
+        localStorage.setItem('name', name);
+        const nameElement = document.querySelector('.name');
+        if (nameElement) {
+            nameElement.textContent = `${name}`;
+        }
+    }
+
+    initName() {
+        const nameElement = document.querySelector('.name');
+        if (nameElement) {
+            nameElement.textContent = `${this.name}`;
+        }
+    }
+
+    editUserName() {
+        const nameElement = document.querySelector('.name');
+        if (!nameElement) return;
+
+        const currentText = nameElement.textContent;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = this.name;
+        input.style.cssText = `
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 2px 6px;
+            background: var(--background-color);
+            outline: none;
+        `;
+
+        nameElement.textContent = '';
+        nameElement.appendChild(input);
+        input.focus();
+        input.select();
+
+        const handleSubmit = () => {
+            const newName = input.value.trim();
+            if (newName) {
+                this.setUserName(newName);
+            }
+            nameElement.textContent = `${this.name}`;
+        };
+
+        const handleBlur = () => {
+            handleSubmit();
+        };
+
+        const handleKeyPress = (e) => {
+            if (e.key === 'Enter') {
+                handleSubmit();
+            } else if (e.key === 'Escape') {
+                nameElement.textContent = `${this.name}`;
+            }
+        };
+
+        input.addEventListener('blur', handleBlur);
+        input.addEventListener('keypress', handleKeyPress);
+    }
+
+    loadTemplate(template) {
+        const templates = {
+            flowchart: `graph TD
+    A[开始] --> B{判断条件}
+    B -->|是| C[执行操作1]
+    B -->|否| D[执行操作2]
+    C --> E[结束]
+    D --> E
+    E --> F[完成]`,
+            sequence: `sequenceDiagram
+    participant 用户
+    participant 系统
+    participant 数据库
+    
+    用户->>系统: 发送请求
+    系统->>数据库: 查询数据
+    数据库-->>系统: 返回结果
+    系统-->>用户: 响应请求`,
+            class: `classDiagram
+    class Animal {
+        +String name
+        +int age
+        +makeSound()
+    }
+    class Dog {
+        +String breed
+        +bark()
+    }
+    class Cat {
+        +String color
+        +meow()
+    }
+    Animal <|-- Dog
+    Animal <|-- Cat`,
+            state: `stateDiagram-v2
+    [*] --> 待机
+    待机 --> 运行: 启动
+    运行 --> 暂停: 暂停
+    暂停 --> 运行: 恢复
+    运行 --> 停止: 停止
+    停止 --> [*]`,
+            gantt: `gantt
+    title 项目计划
+    dateFormat  YYYY-MM-DD
+    section 设计阶段
+    需求分析    :done, des1, 2024-01-01, 2024-01-07
+    系统设计    :active, des2, 2024-01-08, 2024-01-15
+    section 开发阶段
+    编码实现    :dev1, 2024-01-16, 2024-01-30
+    测试调试    :dev2, 2024-01-31, 2024-02-15`
+        };
+
+        const templateCode = templates[template];
+        if (templateCode) {
+            this.editor.setValue(templateCode);
+            this.renderMermaid();
+        }
     }
 
     async exportDiagram(format) {
