@@ -14,6 +14,11 @@ export default defineConfig({
               var: 'mermaid',
               path: `dist/mermaid.min.js`,
           },
+          {
+            name: '@supabase/supabase-js',
+            var: 'supabase',
+            path: `dist/umd/supabase.min.js`,
+          }
       ],
     })
   ],
