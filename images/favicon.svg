@@ -1,0 +1,35 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景正方形 -->
+  <rect x="1" y="1" width="30" height="30" rx="4" fill="rgb(224, 9, 95)"/>
+  
+  <!-- Mermaid图表元素 -->
+  <!-- 流程图节点 -->
+  <rect x="8" y="8" width="8" height="6" rx="2" fill="#ffffff" stroke="#1d4ed8" stroke-width="1"/>
+  <text x="12" y="12" font-family="Arial, sans-serif" font-size="4" text-anchor="middle" fill="#1d4ed8">A</text>
+  
+  <!-- 连接线 -->
+  <path d="M 16 11 L 20 11" stroke="#ffffff" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- 第二个节点 -->
+  <rect x="20" y="8" width="8" height="6" rx="2" fill="#ffffff" stroke="#1d4ed8" stroke-width="1"/>
+  <text x="24" y="12" font-family="Arial, sans-serif" font-size="4" text-anchor="middle" fill="#1d4ed8">B</text>
+  
+  <!-- 时序图元素 -->
+  <line x1="8" y1="18" x2="8" y2="26" stroke="#ffffff" stroke-width="1.5"/>
+  <line x1="16" y1="18" x2="16" y2="26" stroke="#ffffff" stroke-width="1.5"/>
+  <line x1="24" y1="18" x2="24" y2="26" stroke="#ffffff" stroke-width="1.5"/>
+  
+  <!-- 时序图连接 -->
+  <path d="M 8 20 L 16 20" stroke="#ffffff" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <path d="M 16 22 L 24 22" stroke="#ffffff" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrowhead" markerWidth="4" markerHeight="3" refX="3" refY="1.5" orient="auto">
+      <polygon points="0 0, 4 1.5, 0 3" fill="#ffffff"/>
+    </marker>
+    <marker id="arrowhead2" markerWidth="3" markerHeight="2" refX="2.5" refY="1" orient="auto">
+      <polygon points="0 0, 3 1, 0 2" fill="#ffffff"/>
+    </marker>
+  </defs>
+</svg> 
