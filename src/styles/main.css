@@ -194,8 +194,26 @@ body {
     box-shadow: var(--shadow-md);
 }
 
+.btn-github {
+    background-color: #24292e;
+    color: white;
+    border-color: #24292e;
+}
+
+.btn-github:hover {
+    background-color: #1a1e22;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
 .icon {
     font-size: var(--font-size-sm);
+}
+
+.github-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
 }
 
 /* 下拉菜单 */
