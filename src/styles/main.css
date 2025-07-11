@@ -574,7 +574,7 @@ body {
 /* Mermaid 图表样式 */
 .render-area svg {
     max-width: 100%;
-    height: auto;
+    height: 100%;
 }
 
 /* 响应式设计 */

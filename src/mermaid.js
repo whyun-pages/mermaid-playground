@@ -86,19 +86,19 @@ export class Mermaid {
     resetBtn.addEventListener('click', () => {
       if (this.svg) {
         this.scale = 1;
-        this.svg.style.transform = 'scale(1)';
+        this.applyScale();
       }
     });
     zoomOutBtn.addEventListener('click', () => {
       if (this.svg) {
-        this.scale -= 0.1;
-        this.svg.style.transform = `scale(${this.scale})`;
+        this.scale = Math.max(0.1, this.scale - 0.1);
+        this.applyScale();
       }
     });
     zoomInBtn.addEventListener('click', () => {
       if (this.svg) {
-        this.scale += 0.1;
-        this.svg.style.transform = `scale(${this.scale})`;
+        this.scale = Math.min(3, this.scale + 0.1);
+        this.applyScale();
       }
     });
     maximizeBtn.addEventListener('click', () => {
@@ -138,6 +138,13 @@ export class Mermaid {
   get svg() {
     return document.getElementById('svg-container').querySelector('svg');
   }
+
+  applyScale() {
+    if (this.svg) {
+      this.svg.style.transformOrigin = 'top left';
+      this.svg.style.transform = `scale(${this.scale})`;
+    }
+  }
   async renderMermaid() {
     const renderArea = document.getElementById('svg-container');
     const code = this.pg.editor.editor.getValue().trim();
@@ -161,6 +168,9 @@ export class Mermaid {
 
       renderArea.innerHTML = svg;
       console.log('svg', svg);
+
+      // 应用当前的缩放状态
+      this.applyScale();
     } catch (error) {
       console.error('Mermaid 渲染错误:', error);
       renderArea.innerHTML = `
