@@ -62,9 +62,8 @@ export class DataOperation {
     if (data.length > 0) {
       this.savedCodes = new Map(data.map((item) => [item.id, item]));
       this.id = data[0].id;
-      const firstCode = data[0].code;
       this.name = data[0].name;
-      this.editor.editor.setValue(firstCode.code);
+      this.editor.editor.setValue(data[0].code);
     } else {
       this.savedCodes = new Map();
       this.name = '未命名';
