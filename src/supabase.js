@@ -10,22 +10,24 @@ export class Supabase {
   async init() {
     //
   }
-  async all() {
+  async getAll() {
     const { data, error } = await this.client.from('mermaid').select();
     if (error) {
       console.error(error);
-      return [];
+      throw error;
     } else {
       console.log(data);
       return data;
     }
   }
-  async create(data) {
+  async add(data) {
     const { error, data: newData } = await this.client
       .from('mermaid')
-      .insert(data);
+      .insert(data)
+      .select();
     if (error) {
       console.error(error);
+      throw error;
     } else {
       return newData;
     }
@@ -37,12 +39,14 @@ export class Supabase {
       .eq('id', data.id);
     if (error) {
       console.error(error);
+      throw error;
     }
   }
   async delete(id) {
     const { error } = await this.client.from('mermaid').delete().eq('id', id);
     if (error) {
       console.error(error);
+      throw error;
     }
   }
 }

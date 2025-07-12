@@ -2,7 +2,7 @@ import mermaid from 'mermaid';
 import { Utils } from './util';
 export class Mermaid {
   /**
-   * @param {import('./main').MermaidPlayground} pg
+   * @param {{pg: import('./main').MermaidPlayground}} options
    */
   constructor({ pg }) {
     this.currentTheme = 'default';

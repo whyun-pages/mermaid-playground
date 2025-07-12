@@ -3,15 +3,30 @@ import mermaid from 'mermaid';
 
 export class DataOperation {
   constructor({ editor, mermaid, settings }) {
+    /**
+     * @type {import('./monaco').Monaco}
+     */
     this.editor = editor;
+    /**
+     * @type {import('./mermaid').Mermaid}
+     */
     this.mermaid = mermaid;
+    /**
+     * @type {import('./settings').Settings}
+     */
     this.settings = settings;
     this.savedCodes = new Map();
+    this.id = 0;
     Utils.initMermaid();
     this.addEventListeners();
     this.loadAll();
   }
   addEventListeners() {
+    // 新建按钮
+    const newBtn = document.getElementById('new-btn');
+    newBtn.addEventListener('click', () => {
+      this.createNew();
+    });
     // 保存按钮
     const saveBtn = document.getElementById('save-btn');
     saveBtn.addEventListener('click', () => {
@@ -46,8 +61,9 @@ export class DataOperation {
     const data = await db.getAll();
     if (data.length > 0) {
       this.savedCodes = new Map(data.map((item) => [item.id, item]));
-      const firstCode = this.savedCodes.values().next().value;
-      this.name = firstCode.name;
+      this.id = data[0].id;
+      const firstCode = data[0].code;
+      this.name = data[0].name;
       this.editor.editor.setValue(firstCode.code);
     } else {
       this.savedCodes = new Map();
@@ -55,15 +71,39 @@ export class DataOperation {
       this.editor.editor.setValue(defaultMermaidCode);
     }
   }
+  createNew() {
+    this.id = 0;
+    // 清空编辑器内容
+    this.editor.editor.setValue('');
 
-  setName(name) {
-    this.name = name;
-    // localStorage.setItem('name', name);
-    const nameElement = document.querySelector('.name');
+    // // 重置缩放
+    // this.scale = 1;
+
+    // 清空渲染区域
+    const renderArea = document.getElementById('svg-container');
+    renderArea.innerHTML =
+      '<div class="placeholder">在左侧输入 Mermaid 代码，这里将显示渲染结果</div>';
+
+    // 重置主题为默认
+    this.mermaid.changeTheme('default');
+
+    // 更新用户名为"未命名"
+    const nameElement = document.querySelector('.nav-user .name');
     if (nameElement) {
-      nameElement.textContent = `${name}`;
+      nameElement.textContent = '未命名';
     }
+
+    console.log('已创建新项目');
   }
+
+  // setNameDom(name) {
+  //   this.name = name;
+  //   // localStorage.setItem('name', name);
+  //   const nameElement = document.querySelector('.name');
+  //   if (nameElement) {
+  //     nameElement.textContent = `${name}`;
+  //   }
+  // }
 
   initName() {
     const nameElement = document.querySelector('.name');
@@ -98,10 +138,11 @@ export class DataOperation {
 
     const handleSubmit = () => {
       const newName = input.value.trim();
-      if (newName) {
-        this.setName(newName);
-      }
+      this.name = newName;
       nameElement.textContent = `${this.name}`;
+      if (!this.id) {
+        this.saveCode(this.name, this.editor.editor.getValue());
+      }
     };
 
     const handleBlur = () => {
@@ -120,7 +161,7 @@ export class DataOperation {
     input.addEventListener('keypress', handleKeyPress);
   }
 
-  showSaveDialog() {
+  async showSaveDialog() {
     const code = this.editor.editor.getValue().trim();
     if (!code) {
       alert('请先输入代码再保存');
@@ -129,8 +170,12 @@ export class DataOperation {
 
     const name = document.querySelector('.name').innerText;
     if (name && name.trim()) {
-      this.saveCode(name.trim(), code);
-      alert('代码已保存！');
+      try {
+        await this.saveCode(name.trim(), code);
+        alert('代码已保存！');
+      } catch (error) {
+        alert('保存失败：' + error.message);
+      }
     }
   }
 

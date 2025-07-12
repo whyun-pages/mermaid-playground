@@ -3,6 +3,9 @@ import { IndexedDB } from './indexed';
 
 export class Settings {
   constructor() {
+    /**
+     * @type {import('./index').DBAdapter}
+     */
     this.db = null;
     this.settings = this.loadSettings();
     this.addEventListeners();
@@ -69,7 +72,9 @@ export class Settings {
           },
         };
   }
-
+  /**
+   * @returns {Promise<import('./index').DBAdapter>}
+   */
   async getDB() {
     if (this.db) {
       return this.db;
