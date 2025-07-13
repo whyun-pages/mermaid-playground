@@ -66,31 +66,22 @@
                 <input type="text" class="name-input" placeholder="未命名">
             </div>
             <div class="nav-controls">
-                <div class="history-selector">
-                    <button id="save-btn" class="btn btn-success">
-                        <span class="icon">💾</span>
-                        保存
-                    </button>
-                    <button id="history-toggle" class="btn btn-secondary">
-                        <span class="icon">📚</span>
-                        切换
-                        <span class="dropdown-arrow">▼</span>
-                    </button>
-                    <div id="history-dropdown" class="dropdown hidden">
-                        <div class="dropdown-content">
-                            <div class="history-empty">
-                                <div class="empty-text">暂无保存的代码</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button id="export-btn" class="btn btn-primary">
-                    <span class="icon">📤</span>
-                    导出
-                </button>
                 <button id="new-btn" class="btn btn-primary">
                     <span class="icon">➕</span>
                     新建
+                </button>
+
+                <button id="save-btn" class="btn btn-success">
+                    <span class="icon">💾</span>
+                    保存
+                </button>
+                <button id="history-toggle" class="btn btn-secondary">
+                    <span class="icon">📚</span>
+                    切换
+                </button>
+                <button id="export-btn" class="btn btn-primary">
+                    <span class="icon">📤</span>
+                    导出
                 </button>
                 <button id="settings-btn" class="btn btn-secondary">
                     <span class="icon">⚙️</span>
@@ -155,6 +146,23 @@
                             <div class="template-preview" id="gantt-preview"></div>
                             <div class="template-title">甘特图</div>
                             <div class="template-desc">项目进度和时间管理</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录模态框 -->
+        <div id="history-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>历史记录</h3>
+                    <button class="close-btn" id="close-history-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="history-grid" id="history-grid">
+                        <div class="history-empty">
+                            <div class="empty-text">暂无保存的代码</div>
                         </div>
                     </div>
                 </div>

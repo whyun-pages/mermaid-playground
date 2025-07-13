@@ -36,11 +36,7 @@ export class MermaidPlayground {
         .forEach((templateSelector) => {
           templateSelector.classList.remove('active');
         });
-      document
-        .querySelectorAll('.history-selector')
-        .forEach((historySelector) => {
-          historySelector.classList.remove('active');
-        });
+
     });
   }
 }

@@ -31,6 +31,8 @@ export class DataOperation {
 
     // 模板选择模态框
     this.initTemplateModal();
+    // 初始化历史记录模态框
+    this.initHistoryModal();
     // 保存按钮
     const saveBtn = document.getElementById('save-btn');
     saveBtn.addEventListener('click', () => {
@@ -39,16 +41,8 @@ export class DataOperation {
 
     // 历史按钮
     const historyToggle = document.getElementById('history-toggle');
-    const historyDropdown = document.getElementById('history-dropdown');
-    const historySelector = document.querySelector('.history-selector');
-
-    historyToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      Utils.toggleDropdown(historyDropdown);
-      historySelector.classList.toggle('active');
-      if (historySelector.classList.contains('active')) {
-        this.updateHistoryDropdown();
-      }
+    historyToggle.addEventListener('click', () => {
+      this.showHistoryModal();
     });
 
     // 双击名称编辑
@@ -182,7 +176,8 @@ export class DataOperation {
     const savedCode = this.savedCodes.get(Number(id));
     if (savedCode) {
       this.editor.editor.setValue(savedCode.code);
-      //   this.mermaid.renderMermaid();
+      this.name = savedCode.name;
+      this.setNameDom();
     }
   }
 
@@ -193,52 +188,6 @@ export class DataOperation {
     await db.delete(id);
     // this.updateHistoryDropdown();
     document.querySelector('.history-item[data-id="' + id + '"]').remove();
-  }
-
-  async updateHistoryDropdown() {
-    const historyDropdown = document.getElementById('history-dropdown');
-    const dropdownContent = historyDropdown.querySelector('.dropdown-content');
-
-    if (this.savedCodes.size === 0) {
-      dropdownContent.innerHTML =
-        '<div class="history-empty"><div class="empty-text">暂无保存的代码</div></div>';
-      return;
-    }
-
-    dropdownContent.innerHTML = [...this.savedCodes.values()]
-      .reverse()
-      .map(
-        (code) => `
-            <div class="history-item" data-id="${code.id}">
-                <div class="history-name">${code.name}</div>
-                <div class="history-preview">
-                    ${code.preview || '<div style="color: var(--text-secondary); font-size: 0.75rem;">预览生成中...</div>'}
-                </div>
-            </div>
-        `,
-      )
-      .join('');
-
-    dropdownContent.querySelectorAll('.history-item').forEach(async (item) => {
-      item.addEventListener('click', () => {
-        // 为每个历史项添加点击事件
-        const id = item.dataset.id;
-        this.loadSavedCode(id);
-        Utils.hideDropdown(historyDropdown);
-      });
-      const code = this.savedCodes.get(Number(item.dataset.id));
-      if (code && code.id) {
-        try {
-          const { svg } = await mermaid.render(
-            'history-preview-' + code.id,
-            code.code,
-          );
-          item.querySelector('.history-preview').innerHTML = svg;
-        } catch (error) {
-          console.error('render history item error', error);
-        }
-      }
-    });
   }
 
   // 初始化模板选择模态框
@@ -314,6 +263,87 @@ export class DataOperation {
     this.hideTemplateModal();
 
     console.log('已从模板创建新项目:', template.name);
+  }
+
+  // 初始化历史记录模态框
+  initHistoryModal() {
+    const modal = document.getElementById('history-modal');
+    const closeBtn = document.getElementById('close-history-modal');
+
+    // 关闭模态框
+    closeBtn.addEventListener('click', () => {
+      this.hideHistoryModal();
+    });
+
+    // 点击模态框外部关闭
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        this.hideHistoryModal();
+      }
+    });
+  }
+
+  // 显示历史记录模态框
+  showHistoryModal() {
+    const modal = document.getElementById('history-modal');
+    modal.classList.remove('hidden');
+    this.updateHistoryGrid();
+  }
+
+  // 隐藏历史记录模态框
+  hideHistoryModal() {
+    const modal = document.getElementById('history-modal');
+    modal.classList.add('hidden');
+  }
+
+  // 更新历史记录网格
+  async updateHistoryGrid() {
+    const historyGrid = document.getElementById('history-grid');
+
+    if (this.savedCodes.size === 0) {
+      historyGrid.innerHTML =
+        '<div class="history-empty"><div class="empty-text">暂无保存的代码</div></div>';
+      return;
+    }
+
+    historyGrid.innerHTML = [...this.savedCodes.values()]
+      .reverse()
+      .map(
+        (code) => `
+            <div class="history-card" data-id="${code.id}">
+                <div class="history-preview">
+                    <div style="color: var(--text-secondary); font-size: 0.75rem;">预览生成中...</div>
+                </div>
+                <div class="history-name">${code.name}</div>
+                <div class="history-meta">ID: ${code.id}</div>
+            </div>
+        `,
+      )
+      .join('');
+
+    // 为每个历史卡片添加点击事件和渲染预览
+    historyGrid.querySelectorAll('.history-card').forEach(async (card) => {
+      card.addEventListener('click', () => {
+        const id = Number(card.dataset.id);
+        this.loadSavedCode(id);
+        this.hideHistoryModal();
+      });
+
+      const code = this.savedCodes.get(Number(card.dataset.id));
+      if (code && code.id) {
+        try {
+          const { svg } = await mermaid.render(
+            `history-preview-${code.id}`,
+            code.code,
+          );
+          card.querySelector('.history-preview').innerHTML = svg;
+        } catch (error) {
+          console.error('render history card error', error);
+          card.querySelector('.history-preview').innerHTML =
+            '<div style="color: var(--text-secondary); font-size: 0.75rem;">预览生成失败</div>';
+        }
+      }
+    });
   }
 
   // 渲染模板预览图
