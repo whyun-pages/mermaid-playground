@@ -115,13 +115,59 @@
             </div>
         </div>
 
+        <!-- 新建模板选择模态框 -->
+        <div id="new-template-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>选择模板</h3>
+                    <button class="close-btn" id="close-template-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="template-grid">
+                        <div class="template-card" data-template="blank">
+                            <div class="template-preview">
+                                <div class="blank-preview">+</div>
+                            </div>
+                            <div class="template-title">空白模板</div>
+                            <div class="template-desc">从空白开始创建</div>
+                        </div>
+                        <div class="template-card" data-template="flowchart">
+                            <div class="template-preview" id="flowchart-preview"></div>
+                            <div class="template-title">流程图</div>
+                            <div class="template-desc">创建流程图和决策树</div>
+                        </div>
+                        <div class="template-card" data-template="sequence">
+                            <div class="template-preview" id="sequence-preview"></div>
+                            <div class="template-title">时序图</div>
+                            <div class="template-desc">展示系统交互时序</div>
+                        </div>
+                        <div class="template-card" data-template="class">
+                            <div class="template-preview" id="class-preview"></div>
+                            <div class="template-title">类图</div>
+                            <div class="template-desc">设计类和对象关系</div>
+                        </div>
+                        <div class="template-card" data-template="state">
+                            <div class="template-preview" id="state-preview"></div>
+                            <div class="template-title">状态图</div>
+                            <div class="template-desc">描述状态转换流程</div>
+                        </div>
+                        <div class="template-card" data-template="gantt">
+                            <div class="template-preview" id="gantt-preview"></div>
+                            <div class="template-title">甘特图</div>
+                            <div class="template-desc">项目进度和时间管理</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 主要内容区域 -->
         <main class="main-content">
             <!-- 左侧代码编辑区 -->
             <div class="editor-section">
                 <div class="section-header">
                     <h2>Mermaid 代码</h2>
-                    <div class="template-selector">
+                    <!-- <div class="template-selector">
                         <button id="template-toggle" class="btn btn-secondary">
                             <span class="icon">📋</span>
                             模板
@@ -219,7 +265,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div id="editor" class="code-editor"></div>
             </div>

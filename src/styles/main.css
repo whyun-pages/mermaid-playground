@@ -394,8 +394,8 @@ body {
     background-color: var(--background-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-lg);
-    width: 90%;
-    max-width: 600px;
+    width: 80%;
+    max-width: 1200px;
     max-height: 80vh;
     display: flex;
     flex-direction: column;
@@ -527,6 +527,90 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
+/* 模板选择模态框样式 */
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+}
+
+.template-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--surface-color);
+    text-align: center;
+}
+
+.template-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.template-card.selected {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.template-preview {
+    width: 100%;
+    height: 120px;
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+}
+
+.template-preview svg {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+.blank-preview {
+    font-size: 3rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.template-card.selected .template-preview {
+    border-color: var(--primary-color);
+}
+
+.template-title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.template-desc {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.template-card.selected .template-desc {
+    color: rgba(255, 255, 255, 0.8);
+}
+
 /* 主要内容区域 */
 .main-content {
     display: grid;
@@ -619,6 +703,31 @@ body {
     .btn {
         padding: var(--spacing-xs) var(--spacing-sm);
         font-size: var(--font-size-sm);
+    }
+
+    /* 模板选择模态框响应式 */
+    .template-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+
+    .template-preview {
+        height: 80px;
+    }
+
+    .template-title {
+        font-size: var(--font-size-sm);
+    }
+
+    .template-desc {
+        font-size: var(--font-size-xs);
+    }
+}
+
+@media (max-width: 480px) {
+    .template-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     }
 }
 

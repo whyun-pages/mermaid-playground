@@ -37,15 +37,15 @@ export class Mermaid {
     });
 
     // 模板切换按钮
-    const templateToggle = document.getElementById('template-toggle');
-    const templateDropdown = document.getElementById('template-dropdown');
-    const templateSelector = document.querySelector('.template-selector');
+    // const templateToggle = document.getElementById('template-toggle');
+    // const templateDropdown = document.getElementById('template-dropdown');
+    // const templateSelector = document.querySelector('.template-selector');
 
-    templateToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      Utils.toggleDropdown(templateDropdown);
-      templateSelector.classList.toggle('active');
-    });
+    // templateToggle.addEventListener('click', (e) => {
+    //   e.stopPropagation();
+    //   Utils.toggleDropdown(templateDropdown);
+    //   templateSelector.classList.toggle('active');
+    // });
 
     // 导出按钮
     const exportBtn = document.getElementById('export-btn');
@@ -74,15 +74,15 @@ export class Mermaid {
     });
 
     // 模板选择
-    templateDropdown.addEventListener('click', (e) => {
-      if (e.target.closest('.template-item')) {
-        const templateItem = e.target.closest('.template-item');
-        const template = templateItem.dataset.template;
-        this.loadTemplate(template);
-        Utils.hideDropdown(templateDropdown);
-        templateSelector.classList.remove('active');
-      }
-    });
+    // templateDropdown.addEventListener('click', (e) => {
+    //   if (e.target.closest('.template-item')) {
+    //     const templateItem = e.target.closest('.template-item');
+    //     const template = templateItem.dataset.template;
+    //     this.loadTemplate(template);
+    //     Utils.hideDropdown(templateDropdown);
+    //     templateSelector.classList.remove('active');
+    //   }
+    // });
     resetBtn.addEventListener('click', () => {
       if (this.svg) {
         this.scale = 1;

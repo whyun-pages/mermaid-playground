@@ -1,5 +1,6 @@
 import { Utils, defaultMermaidCode } from './util';
 import mermaid from 'mermaid';
+import { getTemplate } from './templates';
 const DEFAULT_NAME = '未命名';
 export class DataOperation {
   constructor({ editor, mermaid, settings }) {
@@ -25,8 +26,11 @@ export class DataOperation {
     // 新建按钮
     const newBtn = document.getElementById('new-btn');
     newBtn.addEventListener('click', () => {
-      this.createNew();
+      this.showTemplateModal();
     });
+
+    // 模板选择模态框
+    this.initTemplateModal();
     // 保存按钮
     const saveBtn = document.getElementById('save-btn');
     saveBtn.addEventListener('click', () => {
@@ -235,5 +239,114 @@ export class DataOperation {
         }
       }
     });
+  }
+
+  // 初始化模板选择模态框
+  initTemplateModal() {
+    const modal = document.getElementById('new-template-modal');
+    const closeBtn = document.getElementById('close-template-modal');
+    const templateCards = modal.querySelectorAll('.template-card');
+
+    // 关闭模态框
+    closeBtn.addEventListener('click', () => {
+      this.hideTemplateModal();
+    });
+
+    // 点击模态框外部关闭
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        this.hideTemplateModal();
+      }
+    });
+
+    // 模板卡片点击事件
+    templateCards.forEach((card) => {
+      card.addEventListener('click', () => {
+        const templateId = card.dataset.template;
+        this.createFromTemplate(templateId);
+      });
+    });
+
+    // 渲染模板预览图
+    this.renderTemplatePreviews();
+  }
+
+  // 显示模板选择模态框
+  showTemplateModal() {
+    const modal = document.getElementById('new-template-modal');
+    modal.classList.remove('hidden');
+  }
+
+  // 隐藏模板选择模态框
+  hideTemplateModal() {
+    const modal = document.getElementById('new-template-modal');
+    modal.classList.add('hidden');
+  }
+
+  // 根据模板创建新项目
+  createFromTemplate(templateId) {
+    const template = getTemplate(templateId);
+    if (!template) {
+      console.error('模板不存在:', templateId);
+      return;
+    }
+
+    // 创建新项目
+    this.id = 0;
+    this.name = DEFAULT_NAME;
+
+    // 设置编辑器内容
+    this.editor.setValue(template.code || '');
+
+    // 清空渲染区域
+    const renderArea = document.getElementById('svg-container');
+    if (renderArea) {
+      renderArea.innerHTML = template.code
+        ? '<div class="placeholder">正在渲染...</div>'
+        : '<div class="placeholder">在左侧输入 Mermaid 代码，这里将显示渲染结果</div>';
+    }
+
+    // 重置主题为默认
+    this.mermaid.changeTheme('default');
+    this.setNameDom();
+
+    // 隐藏模态框
+    this.hideTemplateModal();
+
+    console.log('已从模板创建新项目:', template.name);
+  }
+
+  // 渲染模板预览图
+  async renderTemplatePreviews() {
+    const templates = [
+      { id: 'flowchart', previewId: 'flowchart-preview' },
+      { id: 'sequence', previewId: 'sequence-preview' },
+      { id: 'class', previewId: 'class-preview' },
+      { id: 'state', previewId: 'state-preview' },
+      { id: 'gantt', previewId: 'gantt-preview' },
+    ];
+
+    for (const template of templates) {
+      const templateData = getTemplate(template.id);
+      if (templateData && templateData.code) {
+        try {
+          const previewElement = document.getElementById(template.previewId);
+          if (previewElement) {
+            const { svg } = await mermaid.render(
+              `template-preview-${template.id}`,
+              templateData.code,
+            );
+            previewElement.innerHTML = svg;
+          }
+        } catch (error) {
+          console.error(`渲染模板预览失败 ${template.id}:`, error);
+          const previewElement = document.getElementById(template.previewId);
+          if (previewElement) {
+            previewElement.innerHTML =
+              '<div style="color: var(--text-secondary); font-size: 0.75rem;">预览生成失败</div>';
+          }
+        }
+      }
+    }
   }
 }
