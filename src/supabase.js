@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
-
+/**
+ * @typedef {import('./index').DBAdapter} Supabase
+ */
 export class Supabase {
   constructor({ baseUrl, anonKey }) {
     this.client = createClient(
@@ -16,7 +18,7 @@ export class Supabase {
       console.error(error);
       throw error;
     } else {
-      console.log(data);
+      // console.log(data);
       return data;
     }
   }
@@ -26,17 +28,17 @@ export class Supabase {
       .insert(data)
       .select();
     if (error) {
-      console.error(error);
+      console.error('add error', error);
       throw error;
     } else {
-      return newData;
+      return newData[0];
     }
   }
-  async update(data) {
+  async update(id, data) {
     const { error } = await this.client
       .from('mermaid')
       .update(data)
-      .eq('id', data.id);
+      .eq('id', id);
     if (error) {
       console.error(error);
       throw error;

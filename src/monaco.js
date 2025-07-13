@@ -3,8 +3,15 @@ import * as monaco from 'monaco-editor';
 
 export class Monaco {
   constructor({ onChange }) {
+    /**
+     * @type {import('monaco-editor').editor.IStandaloneCodeEditor}
+     */
+    this.editor = null;
     this.initMonacoEditor();
     this.onChange = onChange;
+  }
+  setValue(value) {
+    this.editor.setValue(value);
   }
   initMonacoEditor() {
     // 配置 Monaco 编辑器

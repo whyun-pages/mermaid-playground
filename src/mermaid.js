@@ -167,7 +167,7 @@ export class Mermaid {
       const { svg } = await mermaid.render(diagramId, code);
 
       renderArea.innerHTML = svg;
-      console.log('svg', svg);
+      // console.log('svg', svg);
 
       // 应用当前的缩放状态
       this.applyScale();

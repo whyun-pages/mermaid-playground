@@ -1,6 +1,6 @@
 import { Utils, defaultMermaidCode } from './util';
 import mermaid from 'mermaid';
-
+const DEFAULT_NAME = '未命名';
 export class DataOperation {
   constructor({ editor, mermaid, settings }) {
     /**
@@ -30,7 +30,7 @@ export class DataOperation {
     // 保存按钮
     const saveBtn = document.getElementById('save-btn');
     saveBtn.addEventListener('click', () => {
-      this.showSaveDialog();
+      this.upsert();
     });
 
     // 历史按钮
@@ -54,6 +54,30 @@ export class DataOperation {
         this.editName();
       });
     }
+    const navName = document.querySelector('.nav-name');
+    const input = document.querySelector('.name-input');
+    const handleSubmit = () => {
+      navName.classList.remove('editing');
+      const newName = input.value.trim();
+      this.name = newName;
+      this.setNameDom();
+      this.upsert();
+    };
+
+    const handleBlur = () => {
+      handleSubmit();
+    };
+
+    const handleKeyPress = (e) => {
+      if (e.key === 'Enter') {
+        handleSubmit();
+      } else if (e.key === 'Escape') {
+        navName.classList.remove('editing');
+      }
+    };
+
+    input.addEventListener('blur', handleBlur);
+    input.addEventListener('keypress', handleKeyPress);
   }
 
   async loadAll() {
@@ -66,14 +90,15 @@ export class DataOperation {
       this.editor.editor.setValue(data[0].code);
     } else {
       this.savedCodes = new Map();
-      this.name = '未命名';
+      this.name = DEFAULT_NAME;
       this.editor.editor.setValue(defaultMermaidCode);
     }
+    this.setNameDom();
   }
   createNew() {
     this.id = 0;
     // 清空编辑器内容
-    this.editor.editor.setValue('');
+    this.editor.setValue('');
 
     // // 重置缩放
     // this.scale = 1;
@@ -85,82 +110,28 @@ export class DataOperation {
 
     // 重置主题为默认
     this.mermaid.changeTheme('default');
-
-    // 更新用户名为"未命名"
-    const nameElement = document.querySelector('.nav-user .name');
-    if (nameElement) {
-      nameElement.textContent = '未命名';
-    }
+    this.name = DEFAULT_NAME;
+    this.setNameDom();
 
     console.log('已创建新项目');
   }
 
-  // setNameDom(name) {
-  //   this.name = name;
-  //   // localStorage.setItem('name', name);
-  //   const nameElement = document.querySelector('.name');
-  //   if (nameElement) {
-  //     nameElement.textContent = `${name}`;
-  //   }
-  // }
-
-  initName() {
+  setNameDom() {
     const nameElement = document.querySelector('.name');
-    if (nameElement) {
-      nameElement.textContent = `${this.name}`;
-    }
+    nameElement.textContent = `${this.name}`;
+    const input = document.querySelector('.name-input');
+    input.value = this.name;
   }
 
   editName() {
-    const nameElement = document.querySelector('.name');
-    if (!nameElement) return;
+    const navName = document.querySelector('.nav-name');
+    navName.classList.add('editing');
 
-    // const currentText = nameElement.textContent;
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = this.name;
-    input.style.cssText = `
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
-            font-weight: 500;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
-            padding: 2px 6px;
-            background: var(--background-color);
-            outline: none;
-        `;
-
-    nameElement.textContent = '';
-    nameElement.appendChild(input);
+    const input = document.querySelector('.name-input');
     input.focus();
-    // input.select();
-
-    const handleSubmit = () => {
-      const newName = input.value.trim();
-      this.name = newName;
-      nameElement.textContent = `${this.name}`;
-      if (!this.id) {
-        this.saveCode(this.name, this.editor.editor.getValue());
-      }
-    };
-
-    const handleBlur = () => {
-      handleSubmit();
-    };
-
-    const handleKeyPress = (e) => {
-      if (e.key === 'Enter') {
-        handleSubmit();
-      } else if (e.key === 'Escape') {
-        nameElement.textContent = `${this.name}`;
-      }
-    };
-
-    input.addEventListener('blur', handleBlur);
-    input.addEventListener('keypress', handleKeyPress);
   }
 
-  async showSaveDialog() {
+  async upsert() {
     const code = this.editor.editor.getValue().trim();
     if (!code) {
       alert('请先输入代码再保存');
@@ -168,12 +139,19 @@ export class DataOperation {
     }
 
     const name = document.querySelector('.name').innerText;
-    if (name && name.trim()) {
+    if (!this.id) {
       try {
         await this.saveCode(name.trim(), code);
-        alert('代码已保存！');
+        alert('新建代码成功！');
       } catch (error) {
         alert('保存失败：' + error.message);
+      }
+    } else {
+      try {
+        await this.updateCode(name.trim(), code);
+        alert('代码已更新！');
+      } catch (error) {
+        alert('更新失败：' + error.message);
       }
     }
   }
@@ -184,26 +162,16 @@ export class DataOperation {
       name: name,
       code: code,
     });
-    console.log(data);
+    console.log('saveCode data', data);
     this.savedCodes.set(data.id, data);
-    // const timestamp = Date.now();
-    // const newCode = {
-    //   id: timestamp,
-    //   name: name,
-    //   code: code,
-    //   timestamp: timestamp,
-    //   preview: null, // 稍后会生成预览
-    // };
+  }
 
-    // this.savedCodes.unshift(newCode); // 添加到开头
-    // localStorage.setItem('saved-codes', JSON.stringify(this.savedCodes));
-    // this.updateHistoryDropdown();
-
-    // 异步生成预览
-
-    // newCode.preview = document.querySelector('.render-area').innerHTML;
-    // localStorage.setItem('saved-codes', JSON.stringify(this.savedCodes));
-    // this.updateHistoryDropdown();
+  async updateCode(name, code) {
+    const db = await this.settings.getDB();
+    await db.update(this.id, {
+      name: name,
+      code: code,
+    });
   }
 
   loadSavedCode(id) {
@@ -255,9 +223,16 @@ export class DataOperation {
         Utils.hideDropdown(historyDropdown);
       });
       const code = this.savedCodes.get(Number(item.dataset.id));
-      if (code) {
-        const { svg } = await mermaid.render(code.id, code.code);
-        item.querySelector('.history-preview').innerHTML = svg;
+      if (code && code.id) {
+        try {
+          const { svg } = await mermaid.render(
+            'history-preview-' + code.id,
+            code.code,
+          );
+          item.querySelector('.history-preview').innerHTML = svg;
+        } catch (error) {
+          console.error('render history item error', error);
+        }
       }
     });
   }

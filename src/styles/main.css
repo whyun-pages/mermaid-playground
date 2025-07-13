@@ -98,7 +98,7 @@ body {
     color: var(--text-primary);
 }
 
-.nav-user {
+.nav-name {
     display: flex;
     align-items: center;
 }
@@ -115,6 +115,24 @@ body {
 
 .name:hover {
     background-color: var(--border-color);
+}
+
+.name-input {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 2px 6px;
+    background: var(--background-color);
+    outline: none;
+    display: none;
+}
+.nav-name.editing .name-input {
+    display: block;
+}
+.nav-name.editing .name {
+    display: none;
 }
 
 .nav-controls {
