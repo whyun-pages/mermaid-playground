@@ -9,34 +9,39 @@ export default defineConfig({
     }),
     cdn({
       modules: [
-          {
-              name: 'mermaid',
-              var: 'mermaid',
-              path: `dist/mermaid.min.js`,
-          },
-          {
-            name: '@supabase/supabase-js',
-            var: 'supabase',
-            path: `dist/umd/supabase.min.js`,
-          }
+        {
+          name: 'mermaid',
+          var: 'mermaid',
+          path: 'dist/mermaid.min.js',
+        },
+        {
+          name: '@supabase/supabase-js',
+          var: 'supabase',
+          path: 'dist/umd/supabase.min.js',
+        },
+        {
+          name: 'svg2roughjs',
+          var: 'svg2roughjs',
+          path: 'dist/svg2roughjs.min.js',
+        },
       ],
-    })
+    }),
   ],
   server: {
     port: 3000,
-    open: true
+    open: true,
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
   },
   optimizeDeps: {
-    include: ['monaco-editor']
+    include: ['monaco-editor'],
   },
   define: {
-    'process.env': {}
+    'process.env': {},
   },
   worker: {
-    format: 'es'
-  }
-}); 
+    format: 'es',
+  },
+});

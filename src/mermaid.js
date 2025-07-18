@@ -1,4 +1,5 @@
 import mermaid from 'mermaid';
+import { Svg2Roughjs } from 'svg2roughjs';
 import { Utils } from './util';
 export class Mermaid {
   /**
@@ -118,7 +119,7 @@ export class Mermaid {
 
     // 只更新 Mermaid 主题
     mermaid.initialize({
-      theme: theme,
+      theme: theme === 'sketch' ? 'default' : theme,
     });
 
     // 保存主题设置
@@ -165,9 +166,31 @@ export class Mermaid {
 
       // 渲染 Mermaid 图表
       const { svg } = await mermaid.render(diagramId, code);
+      // const svgElement = Utils.svgStringToElement(svg);
 
       renderArea.innerHTML = svg;
-      // console.log('svg', svg);
+      const svgElement = renderArea.querySelector('svg');
+      console.log(svgElement);
+      const sourceAttributes = svgElement.attributes;
+      const map = new Map(
+        Array.from(sourceAttributes).map((attr) => [attr.name, attr.value]),
+      );
+      console.log(map);
+      if (this.currentTheme === 'sketch') {
+        const svg2roughjs = new Svg2Roughjs(renderArea, undefined, {
+          fillStyle: 'solid',
+          fill: 'red',
+        });
+        svg2roughjs.svg = svgElement;
+        // Utils.copyAllProperties(svgElement, svg2roughjs.svg);
+        svg2roughjs.sketch();
+        svgElement.remove();
+        const newSvgElement = renderArea.querySelector('svg');
+        for (const [name, value] of map) {
+          console.log(name, value);
+          newSvgElement.setAttribute(name, value);
+        }
+      }
 
       // 应用当前的缩放状态
       this.applyScale();

@@ -1,6 +1,6 @@
 import pluginJs from '@eslint/js';
 import globals from 'globals';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import eslintPluginPrettierRecommended, { ignores } from 'eslint-plugin-prettier/recommended';
 
 export default [
   { files: ['**/*.js'], languageOptions: { sourceType: 'module' } },
@@ -17,7 +17,7 @@ export default [
     rules: {
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
-      'no-undef': 'error',
+      'no-undef': ['error', { typeof: true, ignorePattern: '^_' }],
     },
   },
 ];

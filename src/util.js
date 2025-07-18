@@ -115,4 +115,19 @@ export class Utils {
       document.msExitFullscreen();
     }
   }
+  static svgStringToElement(svgString) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgString, 'image/svg+xml');
+    return doc.documentElement; // SVGSVGElement
+  }
+  static copyAllProperties(src, dest) {
+    const props = Object.getOwnPropertyNames(src);
+    for (const prop of props) {
+      try {
+        dest[prop] = src[prop];
+      } catch (_e) {
+        // 忽略只读属性
+      }
+    }
+  }
 }
