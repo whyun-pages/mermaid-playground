@@ -22,7 +22,7 @@ export default defineConfig({
         {
           name: 'svg2roughjs',
           var: 'svg2roughjs',
-          path: 'dist/svg2roughjs.min.js',
+          path: 'dist/svg2roughjs.umd.min.js',
         },
       ],
     }),
