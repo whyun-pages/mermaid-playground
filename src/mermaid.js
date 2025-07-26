@@ -197,7 +197,7 @@ export class Mermaid {
       }
 
       // 应用当前的缩放状态
-      // this.applyScale();
+      this.applyScale();
     } catch (error) {
       console.error('Mermaid 渲染错误:', error);
       renderArea.innerHTML = `
