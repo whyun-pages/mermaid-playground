@@ -13,7 +13,8 @@ export class Mermaid {
      * @type {import('./main').MermaidPlayground}
      */
     this.pg = pg;
-    // this.editor = this.pg.editor.editor;
+    this.renderArea = document.getElementById('svg-container');
+    this.shadow = this.renderArea.attachShadow({ mode: 'open' });
     this.init();
     this.loadTheme();
     this.addEventListeners();
@@ -158,34 +159,37 @@ export class Mermaid {
 
     try {
       // 显示加载状态
-      renderArea.innerHTML =
+      this.shadow.innerHTML =
         '<div class="placeholder"><div class="loading"></div> 正在渲染...</div>';
 
       // 使用动态ID避免缓存问题
-      const diagramId = 'mermaid-diagram-' + Date.now();
+      const diagramId = 'mermaid-view-' + Date.now();
 
       // 渲染 Mermaid 图表
       const { svg } = await mermaid.render(diagramId, code);
       // const svgElement = Utils.svgStringToElement(svg);
-
-      renderArea.innerHTML = svg;
-      const svgElement = renderArea.querySelector('svg');
-      console.log(svgElement);
+      this.shadow.innerHTML = svg;
+      // renderArea.innerHTML = svg;
+      const svgElement = this.shadow.querySelector('svg');
+      // console.log(svgElement);
       const sourceAttributes = svgElement.attributes;
       const map = new Map(
         Array.from(sourceAttributes).map((attr) => [attr.name, attr.value]),
       );
-      console.log(map);
+      // console.log(map);
       if (this.currentTheme === 'sketch') {
-        const svg2roughjs = new Svg2Roughjs(renderArea, undefined, {
-          fillStyle: 'solid',
-          fill: 'red',
+        const styleElement = svgElement.querySelector('style')?.cloneNode(true);
+
+        const svg2roughjs = new Svg2Roughjs(this.shadow, undefined, {
+          // fillStyle: 'solid',
+          // fill: 'red',
         });
         svg2roughjs.svg = svgElement;
         // Utils.copyAllProperties(svgElement, svg2roughjs.svg);
         svg2roughjs.sketch();
         svgElement.remove();
-        const newSvgElement = renderArea.querySelector('svg');
+        const newSvgElement = this.shadow.querySelector('svg');
+        newSvgElement.appendChild(styleElement);
         for (const [name, value] of map) {
           console.log(name, value);
           newSvgElement.setAttribute(name, value);
@@ -193,7 +197,7 @@ export class Mermaid {
       }
 
       // 应用当前的缩放状态
-      this.applyScale();
+      // this.applyScale();
     } catch (error) {
       console.error('Mermaid 渲染错误:', error);
       renderArea.innerHTML = `

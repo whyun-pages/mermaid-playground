@@ -69,24 +69,10 @@ pnpm run build
 pnpm run lint
 ```
 
-## 项目结构
+## 已知问题
+1. 丢失箭头 https://github.com/livebook-dev/livebook/issues/1440 https://github.com/mermaid-js/mermaid/issues/5741
 
-```
-mermaid/
-├── index.html          # 主页面
-├── src/
-│   ├── main.js         # 主应用逻辑
-│   ├── monaco.js       # Monaco Editor 配置
-│   ├── mermaid.js      # Mermaid 渲染逻辑
-│   ├── data-operation.js # 数据操作和模板管理
-│   ├── templates.js    # 模板数据定义
-│   ├── settings.js     # 设置管理
-│   ├── util.js         # 工具函数
-│   └── styles/
-│       └── main.css    # 样式文件
-├── images/             # 图标和图片资源
-└── package.json        # 项目配置
-```
+
 
 ## TODO
 - [ ] 支持分享
