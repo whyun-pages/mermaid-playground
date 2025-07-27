@@ -138,21 +138,23 @@ export class Mermaid {
     }
   }
   get svg() {
-    return document.getElementById('svg-container').querySelector('svg');
+    return this.shadow.querySelector('svg');
   }
 
   applyScale() {
     if (this.svg) {
+      this.svg.removeAttribute('height');
+      this.svg.style.height = '100%';
       this.svg.style.transformOrigin = 'top left';
       this.svg.style.transform = `scale(${this.scale})`;
     }
   }
   async renderMermaid() {
-    const renderArea = document.getElementById('svg-container');
+    // const renderArea = document.getElementById('svg-container');
     const code = this.pg.editor.editor.getValue().trim();
 
     if (!code) {
-      renderArea.innerHTML =
+      this.shadow.innerHTML =
         '<div class="placeholder">在左侧输入 Mermaid 代码，这里将显示渲染结果</div>';
       return;
     }
@@ -200,7 +202,7 @@ export class Mermaid {
       this.applyScale();
     } catch (error) {
       console.error('Mermaid 渲染错误:', error);
-      renderArea.innerHTML = `
+      this.shadow.innerHTML = `
                 <div class="placeholder" style="color: var(--error-color);">
                     <div>❌ 渲染失败</div>
                     <div style="font-size: 0.875rem; margin-top: 0.5rem;">${error.message}</div>
